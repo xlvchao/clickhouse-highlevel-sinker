@@ -180,7 +180,7 @@ public class ClickHouseWriter implements AutoCloseable {
                 future.complete(true);
 
             } catch (Exception e) {
-                logger.error("Error while flush data to ClickHouse!", e);
+                logger.warn("Failed while flush data to ClickHouse at first time, and it will retry {} times!", sinkSettings.getMaxRetries(), e);
                 handleUnsuccessfulResponse(sinkRequest, future);
             } finally {
                 queueCounter.decrementAndGet();
