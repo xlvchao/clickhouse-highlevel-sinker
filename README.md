@@ -1,21 +1,17 @@
-# **clickhouse-highlevel-sinker**
-
-
-
-## 1、简介
+# 简介
 
 ClickHouse批量写SDK，支持在**Springboot、Flink**等框架中使用，承担着我们团队日均千亿级别数据的落库任务，人性化、高性能、极简依赖！
 
 
 
-## 2、背景
+# 背景
 为了极大地减小ZK的压力，采用“读写分离”方案，即写本地表、读分布式表；写本地表时采用的默认负载均衡策略是轮询，这样可使数据比较均匀的分布在各个分片上，尽量避免数据倾斜的情况发生！
 
 
 
-## 3、使用方式
+# 使用方式
 
-### 3.1 引入依赖
+## 1. 引入依赖
 
 ```xml
 <dependency>
@@ -27,7 +23,7 @@ ClickHouse批量写SDK，支持在**Springboot、Flink**等框架中使用，承
 
 
 
-### 3.2 Springboot中使用
+## 2. Springboot中使用
 
 **定义POJO：**
 
@@ -120,7 +116,7 @@ public class ClickHouseConfig {
 
 
 
-### 3.3 Flink中使用
+## 3. Flink中使用
 
 **定义POJO：**
 
@@ -232,32 +228,63 @@ public class FlinkSinkDemo extends RichSinkFunction<InterfaceLog> {
 
 
 
-## 4、更新日志
+# 更新日志
 
-### 1.0.6
+## 1.0.6
 - 优化代码
 - 当引入SDK后会覆盖项目原本使用的日志框架（比如logback）的配置文件的问题，该问题已修复
 
-### 1.0.5
+## 1.0.5
 - 优化代码
 - 初始化数据源时通过代理查询集群IP列表来构造数据源，并增加定时更新数据源机制
 
-### 1.0.4
+## 1.0.4
 - 优化代码
 - 落库时准备参数阶段，针对LocalDateTime类型做了兼容
 
-### 1.0.3
+## 1.0.3
 - 优化代码
 - 初始化数据源时不再通过代理查询IP列表，直接通过配置传入IP列表
 
-### 1.0.2
+## 1.0.2
 - 优化代码
 - 采用Hikari连接池管理数据库连接
 
-### 1.0.1
+## 1.0.1
 - 更加灵活的配置
 - 支持Flink
 
-### 1.0.0
+## 1.0.0
 - 支持Springboot
 - 完成批量写
+
+
+
+# 公众号
+
+关注不迷路，微信扫描下方二维码关注公众号「**南山有一郎**」，时刻收听**项目更新**通知！
+
+在公众号后台回复“**加群**”，即可加入「**南山有一郎**」交流群！
+
+![mp_qrcode](https://s1.ax1x.com/2022/06/26/jkx8Ds.jpg)
+
+
+
+
+# 许可证
+
+```
+Copyright [2022] [xlvchao]
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+```
