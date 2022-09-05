@@ -1,4 +1,4 @@
-package com.hihonor.aiops.clickhouse.component;
+package com.xlvchao.clickhouse.component;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

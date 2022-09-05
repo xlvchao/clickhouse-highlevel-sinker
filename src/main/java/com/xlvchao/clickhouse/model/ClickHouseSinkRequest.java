@@ -1,4 +1,4 @@
-package com.hihonor.aiops.clickhouse.model;
+package com.xlvchao.clickhouse.model;
 
 import java.util.List;
 

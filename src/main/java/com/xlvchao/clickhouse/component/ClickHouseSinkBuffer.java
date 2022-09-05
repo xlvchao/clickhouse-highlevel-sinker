@@ -1,9 +1,9 @@
 package com.xlvchao.clickhouse.component;
 
 import com.google.common.base.Preconditions;
+import com.xlvchao.clickhouse.model.ClickHouseSinkRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.xlvchao.clickhouse.model.ClickHouseSinkRequest;
 
 import java.util.ArrayList;
 import java.util.Collections;
