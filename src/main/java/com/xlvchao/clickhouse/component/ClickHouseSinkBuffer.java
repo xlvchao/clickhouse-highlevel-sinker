@@ -24,7 +24,8 @@ public class ClickHouseSinkBuffer implements AutoCloseable {
 
     private ClickHouseSinkBuffer(ClickHouseWriter writer, long writeTimeout, int batchSize, Class clazz, List<CompletableFuture<Boolean>> futures) {
         this.writer = writer;
-        this.localBuffer = new ArrayList<>();
+        //this.localBuffer = new ArrayList<>();
+        this.localBuffer = Collections.synchronizedList(new ArrayList<>());
         this.writeTimeoutMillis = TimeUnit.SECONDS.toMillis(writeTimeout);
         this.batchSize = batchSize;
         this.clazz = clazz;
@@ -49,16 +50,16 @@ public class ClickHouseSinkBuffer implements AutoCloseable {
 
     private void addToCommonQueue() {
         List<Object> deepCopy = deepCopy(localBuffer);
+        localBuffer.clear();
+
         ClickHouseSinkRequest sinkRequest = ClickHouseSinkRequest.Builder
                 .newClickHouseSinkRequest()
                 .withValues(deepCopy)
                 .withClass(clazz)
                 .build();
-
         logger.debug("Build sink request success, buffer size = {}", sinkRequest.getData().size());
 
         writer.put(sinkRequest);
-        localBuffer.clear();
     }
 
     private boolean satisfyAddCondition() {
