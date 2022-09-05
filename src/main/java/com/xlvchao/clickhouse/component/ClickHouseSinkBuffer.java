@@ -55,7 +55,7 @@ public class ClickHouseSinkBuffer implements AutoCloseable {
                 .withClass(clazz)
                 .build();
 
-        logger.debug("Build sink request success, buffer size = {}", sinkRequest.getDatas().size());
+        logger.debug("Build sink request success, buffer size = {}", sinkRequest.getData().size());
 
         writer.put(sinkRequest);
         localBuffer.clear();
