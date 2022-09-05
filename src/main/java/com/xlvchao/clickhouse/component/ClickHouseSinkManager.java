@@ -24,6 +24,7 @@ public class ClickHouseSinkManager implements AutoCloseable {
     private static final Logger logger = LoggerFactory.getLogger(ClickHouseSinkManager.class);
     private final ClickHouseSettings clickHouseSettings;
     private final Properties properties;
+    private final Properties staticProperties;
     private final ScheduledCheckerAndCleaner scheduledCheckerAndCleaner;
     private final List<CompletableFuture<Boolean>> futures = Collections.synchronizedList(new LinkedList<>());
     private final List<ServerNode> serverNodes = Collections.synchronizedList(new ArrayList<>());
@@ -34,42 +35,52 @@ public class ClickHouseSinkManager implements AutoCloseable {
     private static final String SUFFIX = "?socket_timeout=3600000&max_execution_time=3600";
 
 
+
     public ClickHouseSinkManager(Properties properties) {
         this.properties = properties;
+        this.staticProperties = createStaticProperties(properties);
+
         this.clickHouseSettings = new ClickHouseSettings(properties);
         this.scheduledCheckerAndCleaner = new ScheduledCheckerAndCleaner(clickHouseSettings, futures);
-        initHikariDataSource(this.properties);
+
+        initHikariDataSource();
+
         logger.info("Build sink manager success, properties = {}", properties);
     }
 
-    public void initHikariDataSource(Properties properties) {
+
+    private Properties createStaticProperties(Properties properties) {
+        Preconditions.checkNotNull(properties);
+        String address = properties.getProperty("clickhouse.hikari.address");
+        String username = properties.getProperty("clickhouse.hikari.username");
+        String password = properties.getProperty("clickhouse.hikari.password");
+        Preconditions.checkNotNull(address);
+        Preconditions.checkNotNull(username);
+        Preconditions.checkNotNull(password);
+
+        Properties properties1  = (Properties) properties.clone();
+        properties1.put("clickhouse.hikari.poolName", "aiops-hikari-ds-updater");
+        properties1.put("clickhouse.hikari.jdbcUrl", PREFIX.concat(address).concat(SUFFIX));
+        return properties1;
+    }
+
+
+    public void initHikariDataSource() {
         try {
-            Preconditions.checkNotNull(properties);
-
-            String address = properties.getProperty("clickhouse.hikari.address");
-            String username = properties.getProperty("clickhouse.hikari.username");
-            String password = properties.getProperty("clickhouse.hikari.password");
-
-            Preconditions.checkNotNull(address);
-            Preconditions.checkNotNull(username);
-            Preconditions.checkNotNull(password);
-
-            properties.put("clickhouse.hikari.jdbcUrl", PREFIX.concat(address).concat(SUFFIX));
-
             // Do once first
-            updateDatasources(properties);
+            updateDatasources();
 
             ThreadFactory factory = ThreadUtil.threadFactory("clickhouse-datasource-scheduled-updater");
             ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor(factory);
-            scheduledExecutorService.scheduleWithFixedDelay(() -> updateDatasources(properties), 10, 10, TimeUnit.MINUTES);
+            scheduledExecutorService.scheduleWithFixedDelay(() -> updateDatasources(), 10, 10, TimeUnit.MINUTES);
 
         } catch (Exception e) {
             logger.error("Init Hikari DataSource For ClickHouse Error!", e);
         }
     }
 
-    private void updateDatasources(Properties properties) {
-        try (HikariDataSource ds = genHikariDataSource(properties);
+    private void updateDatasources() {
+        try (HikariDataSource ds = genHikariDataSource(staticProperties);
              Connection conn = ds.getConnection();
              PreparedStatement prepareStatement = conn.prepareStatement(queryClusterInfoSql);
              ResultSet rs = prepareStatement.executeQuery()) {
@@ -138,7 +149,26 @@ public class ClickHouseSinkManager implements AutoCloseable {
     public Sink buildSink(Class clazz, int threadNum, int batchSize) {
         Preconditions.checkNotNull(scheduledCheckerAndCleaner);
 
-        ClickHouseWriter clickHouseWriter = new ClickHouseWriter(threadNum, properties, futures, dataSources);
+        ClickHouseWriter clickHouseWriter = new ClickHouseWriter(threadNum, properties, futures, dataSources, new DefaultSinkFailureHandler());
+
+        ClickHouseSinkBuffer clickHouseSinkBuffer = ClickHouseSinkBuffer.Builder
+                .newClickHouseSinkBuffer()
+                .withClass(clazz)
+                .withBatchSize(batchSize)
+                .withWriter(clickHouseWriter)
+                .withWriteTimeout(clickHouseSettings.getWriteTimeout())
+                .withFutures(futures)
+                .build();
+
+        scheduledCheckerAndCleaner.addSinkBuffer(clickHouseSinkBuffer);
+
+        return new ClickHouseSink(clickHouseSinkBuffer);
+    }
+
+    public Sink buildSink(Class clazz, int threadNum, int batchSize, SinkFailureHandler handler) {
+        Preconditions.checkNotNull(scheduledCheckerAndCleaner);
+
+        ClickHouseWriter clickHouseWriter = new ClickHouseWriter(threadNum, properties, futures, dataSources, handler);
 
         ClickHouseSinkBuffer clickHouseSinkBuffer = ClickHouseSinkBuffer.Builder
                 .newClickHouseSinkBuffer()

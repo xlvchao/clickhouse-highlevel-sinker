@@ -17,7 +17,7 @@ ClickHouse批量写SDK，支持在**Springboot、Flink**等框架中使用，承
 <dependency>
     <groupId>com.xlvchao.clickhouse</groupId>
     <artifactId>clickhouse-highlevel-sinker</artifactId>
-    <version>1.0.6</version>
+    <version>1.0.7</version>
 </dependency>
 ```
 
@@ -109,7 +109,7 @@ public class ClickHouseConfig {
 
     @Bean
     public Sink interfaceLogSink() {
-        return clickHouseSinkManager.buildSink(InterfaceLog.class, 3, 1000);
+        return clickHouseSinkManager.buildSink(InterfaceLog.class, 3, 1000, new DefaultSinkFailureHandler()); //批量插入失败处理器（当达到重试次数上限时起作用）
     }
 }
 ```
@@ -196,7 +196,7 @@ public class FlinkSinkDemo extends RichSinkFunction<InterfaceLog> {
                 }
             }
         }
-        sink = sinkManager.buildSink(InterfaceLog.class,  3,1000);
+        sink = sinkManager.buildSink(InterfaceLog.class,  3, 1000, new DefaultSinkFailureHandler()); //批量插入失败处理器（当达到重试次数上限时起作用）
     }
 
     @Override
@@ -229,6 +229,10 @@ public class FlinkSinkDemo extends RichSinkFunction<InterfaceLog> {
 
 
 # 更新日志
+
+### 1.0.7
+- 增加失败处理器配置
+- 修复ClickHouseSinkBuffer因使用了非线程安全的ArrayList所导致的数据丢失问题
 
 ## 1.0.6
 - 优化代码

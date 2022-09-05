@@ -3,21 +3,21 @@ package com.xlvchao.clickhouse.model;
 import java.util.List;
 
 public class ClickHouseSinkRequest {
-    private final List<Object> datas;
+    private final List<Object> data;
     private final Class clazz;
     private int attemptCounter;
 
     private Exception exception;
 
-    public ClickHouseSinkRequest(List<Object> datas, Class clazz, Exception exception) {
-        this.datas = datas;
+    public ClickHouseSinkRequest(List<Object> data, Class clazz, Exception exception) {
+        this.data = data;
         this.clazz = clazz;
         this.attemptCounter = 0;
         this.exception = exception;
     }
 
-    public List<Object> getDatas() {
-        return datas;
+    public List<Object> getData() {
+        return data;
     }
 
     public void incrementCounter() {
@@ -75,7 +75,7 @@ public class ClickHouseSinkRequest {
     @Override
     public String toString() {
         return "ClickHouseRequestBlank{" +
-                "values=" + datas +
+                "values=" + data +
                 ", attemptCounter=" + attemptCounter +
                 ", exception=" + exception +
                 '}';
