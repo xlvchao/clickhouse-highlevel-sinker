@@ -231,6 +231,8 @@ public class ClickHouseWriter implements AutoCloseable {
                         prepareStatement.setObject(j+1, value);
                     }
                     prepareStatement.addBatch();
+                } else {
+                    logger.warn("warning: null object!");
                 }
             }
         }
