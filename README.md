@@ -233,6 +233,7 @@ public class FlinkSinkDemo extends RichSinkFunction<InterfaceLog> {
 ### 1.0.7
 - 增加失败处理器配置
 - 修复当待插入的批次中存在个别null对象时导致的批量插入异常
+- 修复ClickHouseSinkBuffer因使用了非线程安全的ArrayList所导致的数据丢失问题
 
 ## 1.0.6
 - 优化代码
