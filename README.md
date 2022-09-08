@@ -20,7 +20,7 @@ ClickHouse批量写SDK，支持在**Springboot、Flink**等框架中使用，承
     <version>1.0.7</version>
 </dependency>
 ```
->注意：sdk内部查询集群节点信息时需要使用开窗函数，因此请提前配置好：添加配置项allow_experimental_window_functions，值为1
+>注意：sdk内部查询集群节点信息时需要使用开窗函数，因此请提前添加配置项：allow_experimental_window_functions，值为1
 
 
 ## 2. Springboot中使用
