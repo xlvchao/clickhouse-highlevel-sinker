@@ -14,13 +14,15 @@ ClickHouse批量写SDK，支持在**Springboot、Flink**等框架中使用，承
 ## 1. 引入依赖
 
 ```xml
+<!-- 注意：SDK内部在查询CH集群节点信息（查询各个分片中error_count较小的节点信息）时，使用到了开窗函数 -->
+<!-- 因此请提前给CH集群添加配置：<allow_experimental_window_functions>1</allow_experimental_window_functions> -->
 <dependency>
     <groupId>com.xlvchao.clickhouse</groupId>
     <artifactId>clickhouse-highlevel-sinker</artifactId>
     <version>1.0.7</version>
 </dependency>
 ```
->*注意：sdk内部查询集群节点信息时需要使用开窗函数，因此请提前添加配置项：<allow_experimental_window_functions>1</allow_experimental_window_functions>*
+
 
 
 ## 2. Springboot中使用
