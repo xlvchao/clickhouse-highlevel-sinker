@@ -19,7 +19,7 @@ ClickHouse批量写SDK，支持在**Springboot、Flink**等框架中使用，承
 <dependency>
     <groupId>com.xlvchao.clickhouse</groupId>
     <artifactId>clickhouse-highlevel-sinker</artifactId>
-    <version>1.0.7</version>
+    <version>1.0.8</version>
 </dependency>
 ```
 
@@ -231,6 +231,9 @@ public class FlinkSinkDemo extends RichSinkFunction<InterfaceLog> {
 
 
 # 更新日志
+
+### 1.0.8
+- 优化代码、提高性能
 
 ### 1.0.7
 - 增加失败处理器配置
