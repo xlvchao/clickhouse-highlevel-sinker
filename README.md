@@ -281,6 +281,7 @@ public class FlinkSinkDemo extends RichSinkFunction<InterfaceLog> {
 
 ### 1.0.8
 - 优化代码、提高性能
+- Springboot使用例子中添加Hook注册Demo
 
 ### 1.0.7
 - 增加失败处理器配置
