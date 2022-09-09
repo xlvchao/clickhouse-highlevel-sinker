@@ -3,6 +3,7 @@ package com.xlvchao.clickhouse.component;
 import com.google.common.base.Preconditions;
 import com.xlvchao.clickhouse.datasource.ServerNode;
 import com.xlvchao.clickhouse.model.ClickHouseSettings;
+import com.xlvchao.clickhouse.model.ClickHouseSqlFactory;
 import com.xlvchao.clickhouse.util.ThreadUtil;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
@@ -147,26 +148,13 @@ public class ClickHouseSinkManager implements AutoCloseable {
     }
 
     public Sink buildSink(Class clazz, int threadNum, int batchSize) {
-        Preconditions.checkNotNull(scheduledCheckerAndCleaner);
-
-        ClickHouseWriter clickHouseWriter = new ClickHouseWriter(threadNum, properties, futures, dataSources, new DefaultSinkFailureHandler());
-
-        ClickHouseSinkBuffer clickHouseSinkBuffer = ClickHouseSinkBuffer.Builder
-                .newClickHouseSinkBuffer()
-                .withClass(clazz)
-                .withBatchSize(batchSize)
-                .withWriter(clickHouseWriter)
-                .withWriteTimeout(clickHouseSettings.getWriteTimeout())
-                .withFutures(futures)
-                .build();
-
-        scheduledCheckerAndCleaner.addSinkBuffer(clickHouseSinkBuffer);
-
-        return new ClickHouseSink(clickHouseSinkBuffer);
+        return buildSink(clazz, threadNum, batchSize, new DefaultSinkFailureHandler());
     }
 
     public Sink buildSink(Class clazz, int threadNum, int batchSize, SinkFailureHandler handler) {
         Preconditions.checkNotNull(scheduledCheckerAndCleaner);
+
+        ClickHouseSqlFactory.put(clazz);
 
         ClickHouseWriter clickHouseWriter = new ClickHouseWriter(threadNum, properties, futures, dataSources, handler);
 
@@ -183,7 +171,7 @@ public class ClickHouseSinkManager implements AutoCloseable {
 
         return new ClickHouseSink(clickHouseSinkBuffer);
     }
-
+    
     public boolean isClosed() {
         return isClosed;
     }

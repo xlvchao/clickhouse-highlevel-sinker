@@ -3,6 +3,7 @@ package com.xlvchao.clickhouse.component;
 import com.google.common.collect.Lists;
 import com.xlvchao.clickhouse.model.ClickHouseSettings;
 import com.xlvchao.clickhouse.model.ClickHouseSinkRequest;
+import com.xlvchao.clickhouse.model.ClickHouseSqlFactory;
 import com.xlvchao.clickhouse.util.DateTimeUtil;
 import com.xlvchao.clickhouse.util.FutureUtil;
 import com.xlvchao.clickhouse.util.TableUtil;
@@ -168,7 +169,7 @@ public class ClickHouseWriter implements AutoCloseable {
 
         @SuppressWarnings("unchecked")
         private void flushToClickHouse(ClickHouseSinkRequest sinkRequest, CompletableFuture<Boolean> future) {
-            String sqlTemplate = TableUtil.genSqlTemplate(sinkRequest.getClazz());
+            String sqlTemplate = ClickHouseSqlFactory.get(sinkRequest.getClazz());
             DataSource dataSource = selectDataSourceByRoundRobin();
             try (Connection conn = dataSource.getConnection();
                  PreparedStatement prepareStatement = conn.prepareStatement(sqlTemplate)) {
