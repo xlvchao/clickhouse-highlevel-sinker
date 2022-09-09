@@ -3,6 +3,7 @@ package com.xlvchao.clickhouse.component;
 import com.google.common.collect.Lists;
 import com.xlvchao.clickhouse.model.ClickHouseSettings;
 import com.xlvchao.clickhouse.model.ClickHouseSinkRequest;
+import com.xlvchao.clickhouse.model.ClickHouseSqlFactory;
 import com.xlvchao.clickhouse.util.DateTimeUtil;
 import com.xlvchao.clickhouse.util.FutureUtil;
 import com.xlvchao.clickhouse.util.TableUtil;
