@@ -3,6 +3,7 @@ package com.xlvchao.clickhouse.component;
 import com.google.common.base.Preconditions;
 import com.xlvchao.clickhouse.datasource.ServerNode;
 import com.xlvchao.clickhouse.model.ClickHouseSettings;
+import com.xlvchao.clickhouse.model.ClickHouseSqlFactory;
 import com.xlvchao.clickhouse.util.ThreadUtil;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
